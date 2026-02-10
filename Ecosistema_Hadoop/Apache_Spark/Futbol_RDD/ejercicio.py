@@ -1,7 +1,7 @@
 from pyspark import SparkContext, SparkConf
 
 configuracion = SparkConf().setAppName("Análisis Fútbol")
-sc = SparkContext(conf=conf)
+sc = SparkContext(conf=configuracion)
 
 liga1 = sc.textFile("liga1.txt")
 liga2 = sc.textFile("liga2.txt")
@@ -15,7 +15,7 @@ equiposPartidos.foreach(print)
 
 # Y para obtener el numero de equipos distintos 
 # usamos count
-numeroEquipos = equipos_distintos.count()
+numeroEquipos = equiposPartidos.distinct().count()
 print(f'\nTotal equipos distintos: {numeroEquipos}')
 
 # 
@@ -34,7 +34,8 @@ print(f'\nTotal de goles: {totalGoles}')
 # 
 primerosTresPartidos = ficherosResultados.take(3)
 print('\nPrimeros 3 partidos: ')
-primerosTresPartidos.foreach(print)
+for partido in primerosTresPartidos:
+    print(partido)
 
 # Para obtener todos los equipos distintos utilizamos
 # la funcion distinct
@@ -50,21 +51,14 @@ golesLocal = ficherosResultados.map(
 golesVisitantes = ficherosResultados.map(
     lambda partido: (partido.split(",")[1], int(partido.split(",")[3]))
 )
-totalGolesEquipo = golesLocal.union(golesVisitantes).reduceByKey(lambda a, b: a + b)
-
-print("\n=== GOLES TOTALES POR EQUIPO ===")
-for equipo, goles in goles_totales.collect():
-    print(f"{equipo}: {goles} goles")
-
-# Equipo más goleador
-equipo_mas_goleador = goles_totales.sortBy(lambda x: x[1], ascending=False).first()
-print(f"\n=== EQUIPO MÁS GOLEADOR: {equipo_mas_goleador[0]} con {equipo_mas_goleador[1]} goles ===")
+totalGolesEquipo = golesLocal.union(golesVisitantes).reduceByKey(lambda total, goles: total + goles)
+print('\nTotal goles equipo: ')
+totalGolesEquipo.foreach(lambda equipo: print(f'{equipo[0]}: {equipo[1]} goles.'))
 
 
-# 8️⃣ Guardar en disco
-equipos_distintos.saveAsTextFile("equipos_futbol")
-print("\n=== EQUIPOS GUARDADOS EN equipos_futbol/ ===")
+equipoMasGoles = totalGolesEquipo.sortBy(lambda equipo: equipo[1], ascending=False).first()
+print(f'\nEl equipo con mas goles es: {equipoMasGoles[0]} con {equipoMasGoles[1]} goles')
 
+equipos.saveAsTextFile("equipos_futbol")
 
-# Cerrar contexto
 sc.stop()
