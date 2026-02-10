@@ -5,8 +5,8 @@ configuracion = SparkConf().setAppName("Análisis Fútbol")
 sc = SparkContext(conf=configuracion)
 
 # Cargamos los ficheros de texto con los resultados
-liga1 = sc.textFile("liga1.txt")
-liga2 = sc.textFile("liga2.txt")
+liga1 = sc.textFile("file:///home/hadoop/CEIABD_BDA/Ecosistema_Hadoop/Apache_Spark/Futbol_RDD/liga1.txt")
+liga2 = sc.textFile("file:///home/hadoop/CEIABD_BDA/Ecosistema_Hadoop/Apache_Spark/Futbol_RDD/liga2.txt")
 # Y realizamos la union
 ficherosResultados = liga1.union(liga2)
 
@@ -71,6 +71,6 @@ totalGolesEquipo.foreach(lambda equipo: print(f'{equipo[0]}: {equipo[1]} goles.'
 equipoMasGoles = totalGolesEquipo.sortBy(lambda equipo: equipo[1], ascending=False).first()
 print(f'\nEl equipo con mas goles es: {equipoMasGoles[0]} con {equipoMasGoles[1]} goles')
 
-equipos.saveAsTextFile("equipos_futbol")
+equipos.saveAsTextFile("file:///home/hadoop/CEIABD_BDA/Ecosistema_Hadoop/Apache_Spark/Futbol_RDD/equipos_futbol")
 
 sc.stop()

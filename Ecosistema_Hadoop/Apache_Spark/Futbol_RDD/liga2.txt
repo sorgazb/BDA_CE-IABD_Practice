@@ -1,3 +1,3 @@
-RealMadrid, Valencia, 1, 0
-Sevilla, Barcelona, 2, 2
-AtleticoMadrid, RealMadrid, 0, 2
+RealMadrid,Valencia,1,0
+Sevilla,Barcelona,2,2
+AtleticoMadrid,RealMadrid,0,2
